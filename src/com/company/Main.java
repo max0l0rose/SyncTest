@@ -1,9 +1,6 @@
 package com.company;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.*;
 
 public class Main {
 
@@ -16,6 +13,9 @@ public class Main {
         Lock rLock1 = lock.readLock();
         Lock wLock1 = lock.writeLock();
 
+
+        StampedLock lock2;
+        lock2.read
 
 //        lock.lock();
 //        lock.lock();
