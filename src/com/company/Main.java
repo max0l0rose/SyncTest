@@ -17,6 +17,8 @@ public class Main {
         StampedLock lock2;
         lock2.read
 
+        //SpinLock spinLock;
+
 //        lock.lock();
 //        lock.lock();
 //
