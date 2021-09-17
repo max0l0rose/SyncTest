@@ -14,8 +14,8 @@ public class Main {
         Lock wLock1 = lock.writeLock();
 
 
-        StampedLock lock2;
-        lock2.read
+        //StampedLock lock2;
+        //lock2.read
 
         //SpinLock spinLock;
 
@@ -63,6 +63,7 @@ public class Main {
 
         final Lock ref = new ReentrantLock(true);
 
+        //1
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -79,6 +80,7 @@ public class Main {
             }
         }).start();
 
+        //2
         new Thread(() -> {
             while(true) {
                 ref.lock();
@@ -92,6 +94,7 @@ public class Main {
             }
         }).start();
 
+        //3
         new Thread(() -> {
             while(true) {
                 ref.lock();
