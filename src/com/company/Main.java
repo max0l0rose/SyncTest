@@ -35,6 +35,48 @@ class Test2 {
 }
 
 
+class EarlyInitSingleton {
+    private static final EarlyInitSingleton INSTANCE = new EarlyInitSingleton();
+    public static EarlyInitSingleton getInstance() {
+        return INSTANCE;
+    }
+
+    // private constructor and other methods...
+    int a = 1; //1
+    static int b = 1; //2
+}
+
+
+class InitOnDemandSingleton {
+    private static class InstanceHolder {
+        private static final InitOnDemandSingleton INSTANCE = new InitOnDemandSingleton();
+    }
+    public static InitOnDemandSingleton getInstance() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    static int getC() {
+        return d;
+    }
+    // private constructor and other methods...
+    int a = 1;
+    static int b = getC();
+    static int c = 1;
+    final static int d = 1;
+}
+
+
+enum EnumSingleton {
+    INSTANCE; // 1
+
+    int a = 1; //2
+    static int b = 1; //3
+    static int c = 1; //4
+    static int d = 1; //5
+    final static int e = 1; //0
+}
+
+
 //class Test3 extends Test2 {
 //    @Override
 //    static String sayHello() {
@@ -51,9 +93,22 @@ public class Main {
 //
 //    }
 
+    static int a = 1;
+    static Integer b = new Integer(1);
+    static Integer c;
+
+    static EarlyInitSingleton earlyInitSingleton;
 
     public static void main(String[] args) {
         System.out.println();
+
+//        EarlyInitSingleton earlyInitSingleton1 = new EarlyInitSingleton();
+//
+//        EarlyInitSingleton earlyInitSingleton = EarlyInitSingleton.getInstance();
+//
+        //InitOnDemandSingleton initOnDemandSingleton = InitOnDemandSingleton.getInstance();
+
+        EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 
         String cc = Test.c;
 
@@ -61,9 +116,21 @@ public class Main {
         String aa = Test.a;
         String bb2 = Test.b;
 
-        String a = Test.sayHello();
+        String aa2 = Test.sayHello();
 
         String bb3 = Test.b;
+
+
+        // !!!!!!!!!!!!!!!!!!! final happen before
+        String cc2 = Test2.c;
+
+        String bb22 = Test2.b;
+        String aa22 = Test2.a;
+        String bb222 = Test2.b;
+
+        String aa222 = Test2.sayHello();
+
+        String bb32 = Test2.b;
 
         int nn = 1;
 
