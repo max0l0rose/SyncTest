@@ -26,17 +26,17 @@ class Test2 {
         return a;
     }
 
-    static final String b = sayHello(); // a static method is called to assign value to b.
+    static String b = sayHello(); // a static method is called to assign value to b.
     // but its a has not been initialized yet.
 
-    static final String a = "hello";
+    final static String a = "hello";
 
-    static final String c = sayHello(); // assignes "hello" to variable c
+    static String c = sayHello(); // assignes "hello" to variable c
 }
 
 
 class EarlyInitSingleton {
-    private static final EarlyInitSingleton INSTANCE = new EarlyInitSingleton();
+    final static EarlyInitSingleton INSTANCE = new EarlyInitSingleton();
     public static EarlyInitSingleton getInstance() {
         return INSTANCE;
     }
@@ -88,19 +88,52 @@ public class Main {
 
     final static Lock lock = new ReentrantLock();
 
-//    synchronized
-//    static void fff() {
-//
-//    }
-
     static int a = 1;
     static Integer b = new Integer(1);
     static Integer c;
 
     static EarlyInitSingleton earlyInitSingleton;
 
-    public static void main(String[] args) {
+    final static Object mutex = new Object();
+
+
+    static void syncTest() {
+        try {
+            Thread.sleep(100);
+            synchronized (mutex) {
+                synchronized (mutex) {
+                    mutex.notify();
+                    int a = 1;
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
         System.out.println();
+
+        //syncTest();
+
+        Thread t1 = new Thread(() -> { syncTest(); });
+
+        Thread t2 = new Thread(() -> {
+            synchronized (mutex) {
+                synchronized (mutex) {
+                    System.out.println("111111");
+                    //mutex.notify();
+                    int a = 1;
+                }
+            }
+        });
+
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+
 
 //        EarlyInitSingleton earlyInitSingleton1 = new EarlyInitSingleton();
 //
@@ -108,17 +141,17 @@ public class Main {
 //
         //InitOnDemandSingleton initOnDemandSingleton = InitOnDemandSingleton.getInstance();
 
-        EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
+        //EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 
-        String cc = Test.c;
-
-        String bb = Test.b;
-        String aa = Test.a;
-        String bb2 = Test.b;
-
-        String aa2 = Test.sayHello();
-
-        String bb3 = Test.b;
+//        String cc = Test.c;
+//
+//        String bb = Test.b;
+//        String aa = Test.a;
+//        String bb2 = Test.b;
+//
+//        String aa2 = Test.sayHello();
+//
+//        String bb3 = Test.b;
 
 
         // !!!!!!!!!!!!!!!!!!! final happen before
