@@ -1,6 +1,5 @@
 package com.company;
 
-import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 
 
@@ -86,47 +85,57 @@ enum EnumSingleton {
 
 public class Main {
 
-    final static Lock lock = new ReentrantLock();
+//    static int a = 1;
+//    static Integer b = new Integer(1);
+//    static Integer c;
+//
+//    static EarlyInitSingleton earlyInitSingleton;
 
-    static int a = 1;
-    static Integer b = new Integer(1);
-    static Integer c;
+    //final static Object mutex = new Object();
+    final static Lock reentrantLock = new ReentrantLock();
+    final static Condition condition = reentrantLock.newCondition();
 
-    static EarlyInitSingleton earlyInitSingleton;
-
-    final static Object mutex = new Object();
-
-
-    static void syncTest() {
+    static void thFunc1() {
+        reentrantLock.lock();
         try {
-            Thread.sleep(100);
-            synchronized (mutex) {
-                synchronized (mutex) {
-                    mutex.notify();
-                    int a = 1;
-                }
-            }
+            //synchronized (mutex) {
+                //synchronized (mutex) {
+                    //mutex.notify();
+            System.out.println("th1 1");
+            Thread.sleep(2000);
+            System.out.println("th1 2");
+            condition.signal();
+                //}
+            //}
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+        finally {
+            reentrantLock.unlock();
         }
     }
 
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println();
+//        System.out.println();
 
-        //syncTest();
-
-        Thread t1 = new Thread(() -> { syncTest(); });
+        Thread t1 = new Thread(() -> { thFunc1(); });
 
         Thread t2 = new Thread(() -> {
-            synchronized (mutex) {
-                synchronized (mutex) {
-                    System.out.println("111111");
-                    //mutex.notify();
-                    int a = 1;
-                }
+            //synchronized (mutex) {
+            //    synchronized (mutex) {
+
+            try {
+                System.out.println("th2 1");
+                condition.await();
+                System.out.println("th2 2");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+                    //mutex.notify();
+            //        int a = 1;
+            //    }
+            //}
         });
 
         t1.start();
@@ -154,34 +163,33 @@ public class Main {
 //        String bb3 = Test.b;
 
 
-        // !!!!!!!!!!!!!!!!!!! final happen before
-        String cc2 = Test2.c;
+        // !!!!!!!!!!!!!!!!!!! final happens before
+//        String cc2 = Test2.c;
+//
+//        String bb22 = Test2.b;
+//        String aa22 = Test2.a;
+//        String bb222 = Test2.b;
+//
+//        String aa222 = Test2.sayHello();
+//
+//        String bb32 = Test2.b;
+//
+//        int nn = 1;
 
-        String bb22 = Test2.b;
-        String aa22 = Test2.a;
-        String bb222 = Test2.b;
-
-        String aa222 = Test2.sayHello();
-
-        String bb32 = Test2.b;
-
-        int nn = 1;
 
 //        Semaphore semaphore;
 //        CyclicBarrier cyclicBarrier;
 //        DelayQueue<> delayQueue; //!!!!!!!!!!
 //        Phaser phaser;
-//
-//
-//        ReadWriteLock lock = new ReentrantReadWriteLock();
-//        Lock rLock1 = lock.readLock();
-//        Lock wLock1 = lock.writeLock();
-
-
         //StampedLock lock2;
         //lock2.read
 
         //SpinLock spinLock;
+
+
+//        ReadWriteLock lock = new ReentrantReadWriteLock();
+//        Lock rLock1 = lock.readLock();
+//        Lock wLock1 = lock.writeLock();
 
 //        lock.lock();
 //        lock.lock();
@@ -224,55 +232,55 @@ public class Main {
 //        }).start();
 
 
-
-        final Lock ref = new ReentrantLock(true);
-
-        //1
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true) {
-                    ref.lock();
-                    System.out.println("A");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    ref.unlock();
-                }
-            }
-        }).start();
-
-        //2
-        new Thread(() -> {
-            while(true) {
-                ref.lock();
-                System.out.println("-B");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ref.unlock();
-            }
-        }).start();
-
-        //3
-        new Thread(() -> {
-            while(true) {
-                ref.lock();
-                System.out.println("--C");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                ref.unlock();
-            }
-        }).start();
-
-
-        System.out.println("OK");
+//
+//        final Lock ref = new ReentrantLock(true);
+//
+//        //1
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while(true) {
+//                    ref.lock();
+//                    System.out.println("A");
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    ref.unlock();
+//                }
+//            }
+//        }).start();
+//
+//        //2
+//        new Thread(() -> {
+//            while(true) {
+//                ref.lock();
+//                System.out.println("-B");
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                ref.unlock();
+//            }
+//        }).start();
+//
+//        //3
+//        new Thread(() -> {
+//            while(true) {
+//                ref.lock();
+//                System.out.println("--C");
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                ref.unlock();
+//            }
+//        }).start();
+//
+//
+//        System.out.println("OK");
     }
 }
