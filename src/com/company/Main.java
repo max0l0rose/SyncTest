@@ -1,101 +1,20 @@
 package com.company;
 
+import java.util.NavigableMap;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.*;
 
 
-class Test {
-
-    static String sayHello()  {
-        return a;
-    }
-
-    static String b = sayHello(); // a static method is called to assign value to b.
-    // but its a has not been initialized yet.
-
-    static String a = "hello";
-
-    static String c = sayHello(); // assignes "hello" to variable c
-}
-
-
-
-class Test2 {
-
-    static String sayHello() {
-        return a;
-    }
-
-    static String b = sayHello(); // a static method is called to assign value to b.
-    // but its a has not been initialized yet.
-
-    final static String a = "hello";
-
-    static String c = sayHello(); // assignes "hello" to variable c
-}
-
-
-class EarlyInitSingleton {
-    final static EarlyInitSingleton INSTANCE = new EarlyInitSingleton();
-    public static EarlyInitSingleton getInstance() {
-        return INSTANCE;
-    }
-
-    // private constructor and other methods...
-    int a = 1; //1
-    static int b = 1; //2
-}
-
-
-class InitOnDemandSingleton {
-    private static class InstanceHolder {
-        private static final InitOnDemandSingleton INSTANCE = new InitOnDemandSingleton();
-    }
-    public static InitOnDemandSingleton getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    static int getC() {
-        return d;
-    }
-    // private constructor and other methods...
-    int a = 1;
-    static int b = getC();
-    static int c = 1;
-    final static int d = 1;
-}
-
-
-enum EnumSingleton {
-    INSTANCE; // 1
-
-    int a = 1; //2
-    static int b = 1; //3
-    static int c = 1; //4
-    static int d = 1; //5
-    final static int e = 1; //0
-}
-
-
-//class Test3 extends Test2 {
-//    @Override
-//    static String sayHello() {
-//        return "";
-//    }
-//}
-
 public class Main {
 
-//    static int a = 1;
-//    static Integer b = new Integer(1);
-//    static Integer c;
-//
-//    static EarlyInitSingleton earlyInitSingleton;
-
-    //final static Object mutex = new Object();
     final static Lock reentrantLock = new ReentrantLock();
     final static Condition condition = reentrantLock.newCondition();
+    final static Condition condition2 = reentrantLock.newCondition();
 
+    //final static Object mutex = new Object();
     static void thFunc1() {
+
         reentrantLock.lock();
         try {
             //synchronized (mutex) {
@@ -105,6 +24,9 @@ public class Main {
             Thread.sleep(2000);
             System.out.println("th1 2");
             condition.signal();
+            Thread.sleep(2000);
+            System.out.println("th1 3");
+            condition2.signal();
                 //}
             //}
         } catch (InterruptedException e) {
@@ -126,11 +48,22 @@ public class Main {
             //    synchronized (mutex) {
 
             try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            reentrantLock.lock();
+            try {
                 System.out.println("th2 1");
                 condition.await();
                 System.out.println("th2 2");
+                condition2.await();
+                System.out.println("th2 3");
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            finally {
+                reentrantLock.unlock();
             }
                     //mutex.notify();
             //        int a = 1;
@@ -144,40 +77,7 @@ public class Main {
         t2.join();
 
 
-//        EarlyInitSingleton earlyInitSingleton1 = new EarlyInitSingleton();
-//
-//        EarlyInitSingleton earlyInitSingleton = EarlyInitSingleton.getInstance();
-//
-        //InitOnDemandSingleton initOnDemandSingleton = InitOnDemandSingleton.getInstance();
-
-        //EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
-
-//        String cc = Test.c;
-//
-//        String bb = Test.b;
-//        String aa = Test.a;
-//        String bb2 = Test.b;
-//
-//        String aa2 = Test.sayHello();
-//
-//        String bb3 = Test.b;
-
-
-        // !!!!!!!!!!!!!!!!!!! final happens before
-//        String cc2 = Test2.c;
-//
-//        String bb22 = Test2.b;
-//        String aa22 = Test2.a;
-//        String bb222 = Test2.b;
-//
-//        String aa222 = Test2.sayHello();
-//
-//        String bb32 = Test2.b;
-//
-//        int nn = 1;
-
-
-//        Semaphore semaphore;
+        Semaphore semaphore;
 //        CyclicBarrier cyclicBarrier;
 //        DelayQueue<> delayQueue; //!!!!!!!!!!
 //        Phaser phaser;
